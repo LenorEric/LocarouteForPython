@@ -19,7 +19,7 @@ class Locate(Query.Query):
         js = open("config.json", 'r')
         jsData = js.read()
         dictData = json.loads(jsData)
-        self.totalLen = dictData["totaoLen"]
+        self.totalLen = dictData["totalLen"]
         self.framePos[3] = self.framePos[4] = self.totalLen
         self.groupLen = dictData["groupLen"]
         self.coreLen = self.groupLen / 5

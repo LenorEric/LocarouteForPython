@@ -432,7 +432,7 @@
     <inspection_tool class="PyBehaveInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="PyBroadExceptionInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="PyByteLiteralInspection" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="PyCallByClassInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyCallByClassInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="PyCallingNonCallableInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PyChainedComparisonsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="PyClassHasNoInitInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />

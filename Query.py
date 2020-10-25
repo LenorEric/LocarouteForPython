@@ -16,6 +16,17 @@ class Query:
         else:
             return list(self.matrix[pos[0]][pos[1]][quad])
 
+    def queryMax(self, pos):
+        maxD = 0
+        loc = [0, 0]
+        for quad in range(4):
+            data = self.queryData(pos, quad)
+            for ser in range(16):
+                if maxD < data[ser]:
+                    maxD = data[ser]
+                    loc = [ser, quad]
+        return [maxD, quad]
+
 
 # 千万别忘记实例化啊qwq
 if __name__ == '__main__':

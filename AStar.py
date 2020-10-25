@@ -11,10 +11,12 @@ def calcHeur(prePos, dest):
     return heur
 
 
+# noinspection PyArgumentList
 class AStar:
     invalid = []
     startPoint = [0, 0]
     destination = [0, 0]
+    colored = []
     route = []
     open = queue.PriorityQueue
     map = {}
@@ -24,6 +26,7 @@ class AStar:
     def __init__(self, invalid, startPoint, destination):
         self.invalid = invalid
         self.totalLen = len(invalid[0])
+        self.colored = [[0 for i in range(self.totalLen)] for j in range(self.totalLen)]
         self.startPoint = startPoint
         self.destination = destination
         self.open.put([calcHeur(startPoint, destination), 0, startPoint, [-1, -1]])
@@ -46,6 +49,8 @@ class AStar:
                 if pre[2][0] + bearing[i][0] < 0 or pre[2][0] + bearing[i][0] >= self.totalLen or pre[2][1] + \
                         bearing[i][1] < 0 or pre[2][1] + bearing[i][1] >= self.totalLen:
                     break
+                    # 因为有松弛的问题存在，这里不能这么写
+                    # invalid和used要分开，并加入松弛
                 if self.invalid[pre[2][0] + bearing[i][0]][pre[2][1] + bearing[i][1]]:
                     nextStep = [0, pre[1] + 1 + (1 - i % 2) * (2 ** 0.5 - 1),
                                 [pre[2][0] + bearing[i][0], pre[2][1] + bearing[i][1]], pre[2]]

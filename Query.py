@@ -16,6 +16,10 @@ class Query:
         else:
             return list(self.matrix[pos[0]][pos[1]][quad])
 
+    # 唉。。懒得重写接口类了，你们到时候重写Query.QUery.queryMax和GiveQuery.GiveQuery.queryMaxMat吧
+    # 或者直接重写Query.Query也行。随便啦
+    # 重写的时候记得改写matrix的内容，直接改成640*640吧，反正也只用到queryMax了
+    # 总之你们看着办( •̥́ ˍ •̀ू )
     def queryMax(self, pos):
         maxD = 0
         loc = [0, 0]
@@ -25,7 +29,7 @@ class Query:
                 if maxD < data[ser]:
                     maxD = data[ser]
                     loc = [ser, quad]
-        return [maxD, quad]
+        return [maxD, loc]
 
 
 # 千万别忘记实例化啊qwq

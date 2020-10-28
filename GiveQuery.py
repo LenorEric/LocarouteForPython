@@ -12,3 +12,6 @@ class GiveQuery:
         self.queryCount += 1
         retMat = list(self.matrix[pos[0]][pos[1]][quad])
         return retMat
+
+    def queryMaxMat(self, pos):
+        pass

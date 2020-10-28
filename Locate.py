@@ -3,6 +3,7 @@ import json
 import GiveQuery
 import Query
 import json
+import Fit
 
 
 # 此处可以优化
@@ -40,9 +41,12 @@ class Locate(Query.Query):
     disturange = 0
 
     # Save Calc Result here
-    framePos = [0, 0, 0, 0]  # top left right bottom
-    searched = []
+
+    framePos = [0, 0, 0, 0]  # top left right bottom  # Perhaps unused, may be deleted later
     inCore = []
+    # maxPoint和coreList的序列必须一一对应
+    maxPoint = []
+    # [[x, y], radius]
     coreList = []
 
     def __init__(self):
@@ -55,7 +59,6 @@ class Locate(Query.Query):
         self.coreLen = self.groupLen / 5
         self.coreThre = dictData["coreThre"]
         self.maxCore = dictData["maxCore"]
-        self.searched = [[0 for i in range(self.totalLen)] for j in range(self.totalLen)]
         self.inCore = [[0 for i in range(self.totalLen)] for j in range(self.totalLen)]
         self.coreRadius = self.coreLen / 2
         self.disturange = dictData["disturange"]
@@ -69,6 +72,8 @@ class Locate(Query.Query):
             g = calcG(subArea)
             if g[2] <= self.disturange:
                 break
+            else:
+                pass
         maxD = 0
         centCir = [0, 0]
         # 这里貌似不是很精细，但是管不了那么多啦， disturange大一点就好qwq
@@ -76,6 +81,7 @@ class Locate(Query.Query):
             for j in range(len(subArea[i])):
                 if maxD < self.queryMax([i + begin[0] - self.coreRadius, j + begin[1] - self.coreRadius]):
                     maxD = self.queryMax([i + begin[0] - self.coreRadius, j + begin[1] - self.coreRadius])
+                    # 这边是映射到全局地址
                     centCir = [i + begin[0] - self.coreRadius, j + begin[1] - self.coreRadius]
         return centCir
 
@@ -83,9 +89,8 @@ class Locate(Query.Query):
         seStep = 3
         for i in range(self.framePos[3], self.groupLen / seStep):
             for j in range(self.framePos[2], self.groupLen / seStep):
-                if self.searched[i][j] or self.inCore[i][j]:
+                if self.inCore[i][j]:
                     continue
-                self.searched[i][j] = 1
                 # 必须保证给定的coreThre足够小，使得所有超过阈值的点都在以coreRadius为半径的圆中
                 if self.queryMax([i, j]) > self.coreThre * self.maxCore:
                     cent = self.scaCent([i, j])
@@ -95,4 +100,3 @@ class Locate(Query.Query):
 
 if __name__ == '__main__':
     loca = Locate()
-    print(loca.queryData((12, 2), 4))

@@ -31,4 +31,5 @@ def circle(coordinates):
 
 if __name__ == '__main__':
     coord = [[36, 14], [36, 10], [19, 28], [18, 31], [33, 18], [26, 26]]
-    print(circle(coord))
+    for i in range(64):
+        print(circle(coord))

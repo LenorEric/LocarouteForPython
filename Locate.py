@@ -41,6 +41,7 @@ class Locate(Query.Query):
     maxCore = 0
     coreRadius = 0
     disturange = 0
+    coreThreDis = 0
 
     # Save Calc Result here
 
@@ -65,7 +66,7 @@ class Locate(Query.Query):
         self.coreRadius = self.coreLen / 2
         self.disturange = dictData["disturange"]
 
-    def scaCent(self, begin):
+    def scanMax(self, begin):
         def begin2TL(begin):
             tl = [begin[0] - self.coreRadius, begin[1] - self.coreRadius]
             return tl
@@ -104,7 +105,7 @@ class Locate(Query.Query):
                             if dirPointLine([i, j], line[2]) or dirPointLine([i, j], line[0]):
                                 subArea[i][j] = 0
                         elif bearing == 2:
-                            if not(dirPointLine([i, j], line[0]) or dirPointLine([i ,j], line[1])):
+                            if not (dirPointLine([i, j], line[0]) or dirPointLine([i, j], line[1])):
                                 subArea[i][j] = 0
             return subArea
 
@@ -144,6 +145,28 @@ class Locate(Query.Query):
                     centCir = [i + begin[0] - self.coreRadius, j + begin[1] - self.coreRadius]
         return centCir
 
+    def scanCircle(self, maxPoint):
+        def ntIter(angle, initStep, initPoint):
+
+            def asp2GP(angle, step, point):
+                return [point[0] + step * math.cos(angle), point[1] + step * math.sin(angle)]
+
+            iterPoint = initPoint
+            step = initStep
+            while abs(self.queryMax(asp2GP(angle, step, iterPoint)) - self.coreThre) > self.coreThreDis:
+                pass
+            return iterPoint
+
+        precision = 6
+        seStep = 3
+        pointList = []
+        # 如果maxPoint离圆心偏离较大，这里可以加入动态算法
+        for i in range(precision):
+            angle = math.pi / precision * i * 2
+            pointList.append(ntIter(angle, self.coreLen/seStep, maxPoint))
+        circle = Fit.circle(pointList)
+        return circle
+
     def roughScan(self):
         seStep = 3
         for i in range(self.framePos[3], self.groupLen / seStep):
@@ -152,9 +175,11 @@ class Locate(Query.Query):
                     continue
                 # 必须保证给定的coreThre足够小，使得所有超过阈值的点都在以coreRadius为半径的圆中
                 if self.queryMax([i, j]) > self.coreThre * self.maxCore:
-                    cent = self.scaCent([i, j])
-                    self.inCore = circle(self.inCore, cent, self.coreRadius)
-                    self.coreList.append(cent)
+                    maxPoint = self.scanMax([i, j])
+                    self.maxPoint.append(maxPoint)
+                    circ = self.scanCircle(maxPoint)
+                    self.inCore = circle(self.inCore, *circ)
+                    self.coreList.append(circ)
 
 
 if __name__ == '__main__':

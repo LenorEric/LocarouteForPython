@@ -7,29 +7,28 @@ queryBot = GiveQuery.GiveQuery()
 
 
 class Query:
-    matrix = [[[[-1 for k in range(16)] for p in range(4)] for i in range(640)] for j in range(640)]
+    matrix = [[-1 for i in range(5000)] for j in range(5000)]
 
-    def queryData(self, pos, quad):
-        if -1 in self.matrix[pos[0]][pos[1]]:
-            self.matrix[pos[0]][pos[1]][quad] = queryBot.queryMat(pos, quad)
-            return self.matrix[pos[0]][pos[1]][quad]
-        else:
-            return list(self.matrix[pos[0]][pos[1]][quad])
+    # 这个用不到了，千万别调用
+    # def queryData(self, pos, quad):
+    #     if -1 in self.matrix[pos[0]][pos[1]]:
+    #         self.matrix[pos[0]][pos[1]][quad] = queryBot.queryMat(pos, quad)
+    #         return self.matrix[pos[0]][pos[1]][quad]
+    #     else:
+    #         return list(self.matrix[pos[0]][pos[1]][quad])
 
     # 唉。。懒得重写接口类了，你们到时候重写Query.QUery.queryMax和GiveQuery.GiveQuery.queryMaxMat吧
     # 或者直接重写Query.Query也行。随便啦
     # 重写的时候记得改写matrix的内容，直接改成640*640吧，反正也只用到queryMax了
     # 总之你们看着办( •̥́ ˍ •̀ू )
+
+    # 不用看着办了，重写GiveQuery.queryMaxMat
     def queryMax(self, pos):
-        maxD = 0
-        loc = [0, 0]
-        for quad in range(4):
-            data = self.queryData(pos, quad)
-            for ser in range(16):
-                if maxD < data[ser]:
-                    maxD = data[ser]
-                    loc = [ser, quad]
-        return [maxD, loc]
+        if self.matrix[pos[0]][pos[1]] == -1:
+            self.matrix[pos[0]][pos[1]] = queryBot.queryMaxMat(pos)
+            return self.matrix[pos[0]][pos[1]]
+        else:
+            return self.matrix[pos[0]][pos[1]]
 
 
 # 千万别忘记实例化啊qwq

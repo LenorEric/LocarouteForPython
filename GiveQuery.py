@@ -1,17 +1,34 @@
+import csv
+
+
 class GiveQuery:
-    matrix = [[[[0 for k in range(16)] for p in range(4)] for i in range(640)] for j in range(640)]
+    matrix = []
     queryCount = 0
 
     def __init__(self):
         self.generateMat()
 
     def generateMat(self):
-        pass
+        f = open("gauss.csv", 'r')
+        csvreader = csv.reader(f)
+        final_list = list(csvreader)
+        for i in range(len(final_list)):
+            for j in range(len(final_list[i])):
+                final_list[i][j] = float(final_list[i][j])
+        self.matrix = final_list
 
-    def queryMat(self, pos, quad):
-        self.queryCount += 1
-        retMat = list(self.matrix[pos[0]][pos[1]][quad])
-        return retMat
+    # 这个报废，别用
+    # def queryMat(self, pos, quad):
+    #     self.queryCount += 1
+    #     retMat = list(self.matrix[pos[0]][pos[1]][quad])
+    #     return retMat
 
     def queryMaxMat(self, pos):
-        pass
+        self.queryCount += 1
+        ret = self.matrix[pos[0]][pos[1]]
+        return ret
+
+
+if __name__ == '__main__':
+    queryBot = GiveQuery()
+    pass

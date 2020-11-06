@@ -7,7 +7,8 @@ if __name__ == '__main__':
         "groupLen": 80,
         "coreThre": 0.4,
         "seStep": 3,
-        "maxCore": 100
+        "maxCore": 100,
+        "disturange": 0.4
     }
     out = open("config.json", 'w')
     out.write(json.dumps(dictData, indent=4))

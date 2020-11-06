@@ -1,6 +1,6 @@
-import GiveQuery
-
-queryBot = GiveQuery.GiveQuery()
+import Locate
 
 if __name__ == '__main__':
-    pass
+    locater = Locate.Locate()
+    locater.roughScan()
+    print(len(locater.coreList))

@@ -63,7 +63,6 @@ class AStar:
             self.closed.append(pre)
             # self.imgDB.IMGSave(used)
             for i in range(8):
-                self.count += 1
                 # print([pre[2][0] + bearing[i][0], pre[2][1] + bearing[i][1]])
                 if pre[2][0] + bearing[i][0] < 0 or pre[2][0] + bearing[i][0] >= self.totalLen or pre[2][1] + \
                         bearing[i][1] < 0 or pre[2][1] + bearing[i][1] >= self.totalLen:
@@ -78,7 +77,6 @@ class AStar:
                     if nextStep[2] == self.destination:
                         self.closed.append(nextStep)
                         self.map[tuple(nextStep[2])] = len(self.closed)
-                        self.imgDB.IMGSave(used)
                         return
                     nextStep[0] = nextStep[1] + calcHeur(nextStep[2], self.destination)
                     used[nextStep[2][0]][nextStep[2][1]] = 1

@@ -1,15 +1,21 @@
 import csv
+import json
 
 
 class GiveQuery:
+    csvName = ""
     matrix = []
     queryCount = 0
 
     def __init__(self):
+        js = open("config.json", 'r')
+        jsData = js.read()
+        dictData = json.loads(jsData)
+        self.csvName = dictData["csvName"]
         self.generateMat()
 
     def generateMat(self):
-        f = open("gauss.csv", 'r')
+        f = open(self.csvName, 'r')
         csvreader = csv.reader(f)
         final_list = list(csvreader)
         for i in range(len(final_list)):

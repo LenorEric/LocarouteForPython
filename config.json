@@ -2,8 +2,12 @@
     "totalLen": 640,
     "groupLen": 80,
     "coreThre": 0.5,
-    "coreLen": 40,
+    "coreLen": 25,
+    "coreLenThre" : 0.2,
     "seStep": 3,
     "maxCore": 100,
-    "disturange": 10
+    "disturange": 10,
+    "coreThreDis": 4,
+    "start": 1,
+    "csvName": "GAUSSrandom.csv"
 }

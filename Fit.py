@@ -25,8 +25,8 @@ def circle(coordinates):
     xc_2, yc_2 = center_2
     # 拟合半径（给定的coord中的点到圆心的距离的算数平均值），本质上也算一次最小二乘法吧
     Ri_2 = sqrt((x - xc_2) ** 2 + (y - yc_2) ** 2)
-    R_2 = Ri_2.mean()
-    return [xc_2, yc_2, R_2]
+    R_2 = int(Ri_2.mean())
+    return [list(map(int, [xc_2, yc_2])), R_2]
 
 
 if __name__ == '__main__':

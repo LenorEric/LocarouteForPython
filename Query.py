@@ -1,14 +1,13 @@
 import GiveQuery
 
 # 以下是GiveQuery测试实现方法
-# 届时请直接重写Query接口类的第一个return方法
+# 届时请直接重写GiveQuery接口类的第一个return方法
 
-queryBot = GiveQuery.GiveQuery()
 
 
 class Query:
+    queryBot = GiveQuery.GiveQuery()
     matrix = [[-1 for i in range(5000)] for j in range(5000)]
-
     # 这个用不到了，千万别调用
     # def queryData(self, pos, quad):
     #     if -1 in self.matrix[pos[0]][pos[1]]:
@@ -25,7 +24,7 @@ class Query:
     # 不用看着办了，重写GiveQuery.queryMaxMat
     def queryMax(self, pos):
         if self.matrix[pos[0]][pos[1]] == -1:
-            self.matrix[pos[0]][pos[1]] = queryBot.queryMaxMat(pos)
+            self.matrix[pos[0]][pos[1]] = self.queryBot.queryMaxMat(pos)
             return self.matrix[pos[0]][pos[1]]
         else:
             return self.matrix[pos[0]][pos[1]]
@@ -34,4 +33,4 @@ class Query:
 # 千万别忘记实例化啊qwq
 if __name__ == '__main__':
     qur = Query()
-    print(qur.queryData((10, 10), 1))
+    # print(qur.queryData((10, 10), 1))

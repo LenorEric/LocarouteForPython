@@ -8,19 +8,6 @@ import numpy as np
 import Fit
 
 
-# 此处可以优化
-def circle(sqr, cent, radius):
-    sq = list(sqr)
-    for x in range(cent[0] - radius, cent[0] + radius):
-        for y in range(cent[1] - radius, cent[1] + radius):
-            # x是行，y是列
-            if x < 0 or y < 0 or y > len(sqr[0]) or x > len(sqr):
-                continue
-            elif (cent[0] - x) ** 2 + (cent[1] - y) ** 2 <= radius ** 2:
-                sq[x][y] = 1
-    return sq
-
-
 class Locate(Query.Query):
     # Const is here
     totalLen = 0
@@ -31,9 +18,10 @@ class Locate(Query.Query):
     coreRadius = 0
     disturange = 0
     coreThreDis = 0
+    coreLenThre = 0
 
     # Save Calc Result here
-
+    counts = [0 for i in range(6)]
     framePos = [0, 0, 0, 0]  # top left right bottom  # Perhaps unused, may be deleted later
     inCore = []
     # maxPoint和coreList的序列必须一一对应
@@ -51,9 +39,11 @@ class Locate(Query.Query):
         self.coreLen = dictData["coreLen"]
         self.coreThre = dictData["coreThre"]
         self.maxCore = dictData["maxCore"]
+        self.coreLenThre = dictData["coreLenThre"]
         self.inCore = [[0 for i in range(self.totalLen)] for j in range(self.totalLen)]
         self.coreRadius = self.coreLen / 2
         self.disturange = dictData["disturange"]
+        self.coreThreDis = dictData["coreThreDis"]
 
     def scanMax(self, begin):
         def calcG(subArea):
@@ -81,6 +71,7 @@ class Locate(Query.Query):
             return glb
 
             # 此处可以加入越界检查，或者别的地方加入
+            # 算了，不加了
 
         def stepPresent(present, seStep, angle):
             step = [round(present[0] + self.coreLen / seStep * math.cos(angle)),
@@ -141,6 +132,7 @@ class Locate(Query.Query):
             else:
                 present = g[0]
                 for i in range(3):
+                    self.counts[0] += 1
                     qPresent[i] = self.queryMax(mapSub2Glb(begin, stepPresent(present, seStep, angle[i])))
                 bearing = qPresent.index(min(qPresent))
                 subArea = carveSubArea(subArea, bearing, present)
@@ -155,24 +147,28 @@ class Locate(Query.Query):
         # 这里貌似不是很精细，但是管不了那么多啦， disturange大一点就好qwq
         for i in range(len(subArea)):
             for j in range(len(subArea[i])):
-                if maxD < self.queryMax(mapSub2Glb([i, j])):
-                    maxD = self.queryMax(mapSub2Glb([i, j]))
-                    # 这边是映射到全局地址
-                    centCir = [i + begin[0] - self.coreRadius, j + begin[1] - self.coreRadius]
+                if subArea[i][j]:
+                    if maxD < self.queryMax(mapSub2Glb(begin, [i, j])):
+                        maxD = self.queryMax(mapSub2Glb(begin, [i, j]))
+                        # 这边是映射到全局地址
+                        centCir = [i + begin[0] - self.coreRadius, j + begin[1] - self.coreRadius]
         return centCir
 
     def scanCircle(self, maxPoint):
         def ntIter(angle, initStep, initPoint):
 
             def asp2GP(angle, step, point):
-                return [point[0] + step * math.cos(angle), point[1] + step * math.sin(angle)]
+                ret = [point[0] + step * math.cos(angle), point[1] + step * math.sin(angle)]
+                ret = list(map(round, ret))
+                return ret
 
             iterPoint = initPoint
             mnStep = initStep
             mxStep = self.coreLen
             while abs(
-                    self.queryMax(asp2GP(angle, (mnStep + mxStep) / 2, iterPoint)) - self.coreThre) > self.coreThreDis:
-                if self.queryMax(asp2GP(angle, (mnStep + mxStep) / 2, iterPoint)) - self.coreThre > 0:
+                    self.queryMax(asp2GP(angle, (mnStep + mxStep) / 2,
+                                         iterPoint)) - self.coreLenThre * self.maxCore) > self.coreThreDis:
+                if self.queryMax(asp2GP(angle, (mnStep + mxStep) / 2, iterPoint)) - self.coreLenThre * self.maxCore > 0:
                     mnStep = (mnStep + mxStep) / 2
                 else:
                     mxStep = (mnStep + mxStep) / 2
@@ -189,14 +185,27 @@ class Locate(Query.Query):
         return circle
 
     def roughScan(self):
-        seStep = 3
+        # 此处可以优化
+        def circle(sqr, cent, radius):
+            sq = list(sqr)
+            for x in range(cent[0] - radius, cent[0] + radius):
+                for y in range(cent[1] - radius, cent[1] + radius):
+                    # x是行，y是列
+                    if x < 0 or y < 0 or y > len(sqr[0]) or x > len(sqr):
+                        continue
+                    elif (cent[0] - x) ** 2 + (cent[1] - y) ** 2 <= radius ** 2:
+                        sq[x][y] = 1
+            return sq
+
+        seStep = 5
         for i in range(0, self.totalLen, round(self.groupLen / seStep)):
             for j in range(0, self.totalLen, round(self.groupLen / seStep)):
                 if self.inCore[i][j]:
                     continue
                 # 必须保证给定的coreThre足够小，使得所有超过阈值的点都在以coreRadius为半径的圆中
+                self.counts[3] += 1
                 if self.queryMax([i, j]) > self.coreThre * self.maxCore:
-                    maxPoint = self.scanMax([i, j])
+                    maxPoint = list(map(round, self.scanMax([i, j])))
                     self.maxPoint.append(maxPoint)
                     circ = self.scanCircle(maxPoint)
                     self.inCore = circle(self.inCore, *circ)

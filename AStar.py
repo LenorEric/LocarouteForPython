@@ -44,13 +44,26 @@ class AStar:
         self.open.put([calcHeur(startPoint, destination), 0, startPoint, [-1, -1]])
 
     def generoute(self):
+        def sameDirc(lst, pre, nxt):
+            if pre[0] - lst[0] == nxt[0] - pre[0] and pre[1] - lst[1] == nxt[1] - pre[1]:
+                return True
+            else:
+                return False
+
+        allRoute = []
         pre = self.closed[len(self.closed) - 1]
         if pre[2] != self.destination:
             print("Desti ERROR")
         while pre[3] != [-1, -1]:
-            self.route.append(pre[2])
+            allRoute.append(pre[2])
             pre = self.closed[self.map[tuple(pre[3])]]
-        self.route.reverse()
+        allRoute.reverse()
+        prime = [0]
+        for i in range(1, len(allRoute) - 1):
+            if not (sameDirc(allRoute[i - 1], allRoute[i], allRoute[i + 1])):
+                prime.append(i)
+        for key in prime:
+            self.route.append(allRoute[key])
 
     def bfs(self):
         # bearing list
@@ -71,8 +84,8 @@ class AStar:
                     # invalid和used要分开，并加入松弛
                 if used[pre[2][0] + bearing[i][0]][pre[2][1] + bearing[i][1]]:
                     continue
-                if not(self.invalid[pre[2][0] + bearing[i][0]][pre[2][1] + bearing[i][1]]):
-                    nextStep = [0, pre[1] + 1 + abs(bearing[i][0]*bearing[i][1]) * (2 ** 0.5 - 1),
+                if not (self.invalid[pre[2][0] + bearing[i][0]][pre[2][1] + bearing[i][1]]):
+                    nextStep = [0, pre[1] + 1 + abs(bearing[i][0] * bearing[i][1]) * (2 ** 0.5 - 1),
                                 [pre[2][0] + bearing[i][0], pre[2][1] + bearing[i][1]], pre[2]]
                     if nextStep[2] == self.destination:
                         self.closed.append(nextStep)
